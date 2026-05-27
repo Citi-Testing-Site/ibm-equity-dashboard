@@ -18,7 +18,7 @@ openpyxl==3.1.2
 numpy==1.26.3
 
 # Market data
-yfinance==0.2.35
+yfinance==1.4.0
 
 # Validation
 pydantic==2.5.3
