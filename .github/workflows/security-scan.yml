@@ -33,17 +33,30 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
       
+      - name: Check if Python code exists
+        id: check_python
+        run: |
+          if [ -d "backend/app" ] && [ "$(find backend/app -name '*.py' | wc -l)" -gt 0 ]; then
+            echo "has_python=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_python=false" >> $GITHUB_OUTPUT
+            echo "⚠️ No Python code found yet - skipping Python security scans"
+          fi
+      
       - name: Set up Python
+        if: steps.check_python.outputs.has_python == 'true'
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
       
       - name: Install dependencies
+        if: steps.check_python.outputs.has_python == 'true'
         run: |
           cd backend
           pip install bandit safety
       
       - name: Run Bandit (Python security linter)
+        if: steps.check_python.outputs.has_python == 'true'
         run: |
           cd backend
           bandit -r app/ -f json -o bandit-report.json || true
@@ -51,6 +64,7 @@ jobs:
         continue-on-error: true
       
       - name: Run Safety (dependency vulnerability check)
+        if: steps.check_python.outputs.has_python == 'true'
         run: |
           cd backend
           safety check --json || true
@@ -58,8 +72,8 @@ jobs:
         continue-on-error: true
       
       - name: Upload Bandit results
+        if: steps.check_python.outputs.has_python == 'true'
         uses: actions/upload-artifact@v4
-        if: always()
         with:
           name: bandit-results
           path: backend/bandit-report.json
