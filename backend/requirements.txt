@@ -5,7 +5,7 @@ python-multipart==0.0.6
 
 # Database
 sqlalchemy==2.0.25
-sqlcipher3==0.5.2
+sqlcipher3==0.6.2
 
 # Security
 cryptography==42.0.0
